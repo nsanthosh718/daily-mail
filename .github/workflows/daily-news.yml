@@ -1,0 +1,27 @@
+name: Daily News
+
+on:
+  schedule:
+    # 07:00 UTC every day. GitHub cron is UTC-only and can be delayed a few
+    # minutes under load. Adjust the time to suit you: https://crontab.guru
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}   # lets you trigger a test run from the Actions tab
+
+jobs:
+  send-news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send news
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python news_bot.py
