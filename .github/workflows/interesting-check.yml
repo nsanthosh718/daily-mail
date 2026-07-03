@@ -1,15 +1,13 @@
-name: Daily News
+name: Interesting News Watcher
 
 on:
   schedule:
-    # Runs three times a day (UTC). Adjust the times to suit you.
-    - cron: "0 0 * * *"    # 00:00 UTC
-    - cron: "0 8 * * *"    # 08:00 UTC
-    - cron: "0 16 * * *"   # 16:00 UTC
-  workflow_dispatch: {}   # lets you trigger a test run from the Actions tab
+    # check every 15 minutes for very interesting/breaking items
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
 
 jobs:
-  send-news:
+  check-and-send:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Send news
+      - name: Check and send interesting news
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python news_bot.py
+        run: python news_bot.py --mode interesting
